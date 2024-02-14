@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const ProductRoutes = require('./api/routes/products');
 const OrderRoutes = require('./api/routes/orders');
+const userRoutes = require('./api/routes/user');
 
 const connect = mongoose.connect('mongodb://0.0.0.0:27017/node-restful-api');
 connect.then(()=>{
@@ -15,7 +16,10 @@ connect.then(()=>{
     console.log("Database cannot be connected: " + err);
 });
 
+mongoose.Promise = global.Promise;
+
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
@@ -29,8 +33,11 @@ app.use((req,res,next)=>{
     }
     next();
 })
+
+
 app.use('/products',ProductRoutes);
 app.use('/orders',OrderRoutes);
+app.use('/user',userRoutes);
 
 app.use((req,res,next)=>{
     const err = new Error('Not Found');
@@ -46,4 +53,5 @@ app.use((err,req,res,next)=>{
         }
     })
 })
+
 module.exports = app;
